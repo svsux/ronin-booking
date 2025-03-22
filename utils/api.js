@@ -1,47 +1,37 @@
-// /utils/api.js
-const PROXY_URL = "http://77.235.31.249:3001/proxy";
+import axios from "axios";
 
-// Получить список ПК
+// Токен для iCafe API
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiYjc3NDJjMzAwMDBkYWU1ZDAyYTUyOTdhNzVhYTgxMGZjMjQ0ZTcwM2QwNDI5YmUxZDE5OWJkODAyNmVjZDIyZDFlODkwNjExZDcxZjEwMTAiLCJpYXQiOjE3NDI2MDgzOTEuNDMzMzA1LCJuYmYiOjE3NDI2MDgzOTEuNDMzMzA4LCJleHAiOjE3NzQxNDQzOTEuNDMxMzQ4LCJzdWIiOiIzODQxMTg5NzcxNzcyODkiLCJzY29wZXMiOltdfQ.pJeKrg5EDdo6kYefWOkJ3ZnITNX0rW99GuCUzu5efqSXLSwlvyIFjLImnezJIvT_-zFHxUqAethpefHRMM-OxaaRHUaDPIjRdRQBb1nvzAk9yqjOXw0Ihl0ynefG6Yw8DFgWoJNHgl2FFYASzWuHo6PWCjyj1XRwThSPSV-KzYGuHG3GoVnlwi3S4hubClAFKGGUZ-l2l6w7H2QLQWWINakeyUFQ_I-OR9aNc22Uj1Tp4SOPHaPJkFWc5rYcN5MzdBi3pmEqFzEe9Py7cm6GZi4S19ZO1mI6EJcw9wsXWaSZ8JdDgg66IWRzzz-bWzVmWBmXGTU0-Mk_lC2eB6B2RNpW1ZXepBvRbKExapV4UJfIGCi62wfae8cwllb2p3wUs1sJlk8EliPdiGsJsJ0Zv5DDfvu9LRl0n4x3b7pe9XCErMKUHu368w1nBsiujd-iJOpN00uwTdqnThdD3_1H6sLOdZF93Bwh6yAyiC-i2uiXPQedRwD48LUb7dURD_Qr_r711PIq_gRWPQvUlwcXLBcmb9iA4dU0e8vV6QERzqV2CaQzCKlzHEoL63gSj4ufhEcL0n93ONpU_VK9se5YhNzqFuX1IhW4-l9UYwQqVWcjOoUnvQVI2JgAAL2bcsDihaOOEvQ_EMLGIk-M4RXbnTwi0BFuC_evr2EetJN3Up4";
+
+const PROXY_URL = "http://94.232.247.58:3001/proxy"; // URL твоего прокси
+
 export const fetchPCs = async () => {
-  const res = await fetch(PROXY_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "/cafe/77289/base/query",
-      method: "GET"
-    })
+  const { data } = await axios.post(PROXY_URL, {
+    endpoint: "/cafe/77289/base/query", // Правильный endpoint
+  }, {
+    headers: { Authorization: `Bearer ${token}` },
   });
-
-  const json = await res.json();
-  return json?.data?.pcs_init?.pc_list || [];
+  return data?.data?.pcs_init?.pc_list || [];
 };
 
-// Забронировать ПК
 export const bookPC = async (pc_name) => {
-  await fetch(PROXY_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  await axios.post(
+    PROXY_URL,
+    {
       endpoint: "/cafe/77289/pcs/action/setOutOfOrder",
-      method: "POST",
-      body: {
-        pcs: [{ pc_name, pc_enabled: 1 }]
-      }
-    })
-  });
+      body: { pcs: [{ pc_name, pc_enabled: 1 }] }
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
 };
 
-// Снять бронь с ПК
 export const unbookPC = async (pc_name) => {
-  await fetch(PROXY_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  await axios.post(
+    PROXY_URL,
+    {
       endpoint: "/cafe/77289/pcs/action/setOutOfOrder",
-      method: "POST",
-      body: {
-        pcs: [{ pc_name, pc_enabled: 0 }]
-      }
-    })
-  });
+      body: { pcs: [{ pc_name, pc_enabled: 0 }] }
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
 };
